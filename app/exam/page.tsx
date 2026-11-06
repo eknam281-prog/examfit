@@ -11,6 +11,7 @@ import { OralExam } from "@/components/OralExam";
 import { useServerFlags } from "@/lib/useServerFlags";
 import { deriveFormat, isSimilarStem, MAX_QUESTIONS, ORAL_TYPES, planJob, QUESTION_TYPES, type GeneratedQuestion, type JobPlan } from "@/lib/generate";
 import { selectForGeneration } from "@/lib/materials";
+import { httpFailureText } from "@/lib/ocr";
 import { listFiles, listPages, type PdfPage } from "@/lib/pdfStore";
 
 const field = "min-h-12 w-full rounded-2xl border border-charcoal/15 bg-white px-4 text-sm";
@@ -103,9 +104,9 @@ export default function ExamPage() {
           const data = (await res.json().catch(() => ({}))) as { questions?: GeneratedQuestion[]; rejected?: unknown[]; insufficient?: string[]; usage?: { prompt_tokens?: number; completion_tokens?: number }; message?: string; missing?: string[] };
           if (!res.ok) {
             const miss = data.missing?.length ? ` 필요한 서버 설정: ${data.missing.join(", ")}` : "";
-            j.failures.push(`${b.index + 1}/${p.batches.length}번째 호출 실패: ${data.message ?? `HTTP ${res.status}`}${miss}`);
+            j.failures.push(`${b.index + 1}/${p.batches.length}번째 호출 실패: ${httpFailureText(res.status, data.message)}${miss}`);
             consecutive++;
-            if ([400, 429, 503].includes(res.status)) fatal = true; // 설정·한도 문제는 계속 호출해도 소용없다
+            if ([400, 403, 429, 503].includes(res.status)) fatal = true; // 설정·한도 문제는 계속 호출해도 소용없다
             if (data.insufficient?.length) j.insufficient.push(...data.insufficient);
           } else {
             consecutive = 0;

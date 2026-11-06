@@ -275,7 +275,7 @@ export function PdfReview({ onSummary, onContinue }: { onSummary: (s: MaterialSu
             next = applyOcrFailure(cur, r.message ?? "OCR에 실패했습니다.");
             job.failures.push(`${t.page}쪽: ${next.ocrError}`);
             consecutive++;
-            fatal = [400, 429, 503].includes(r.status);
+            fatal = [400, 403, 429, 503].includes(r.status);
           }
         } catch (e) {
           if (ac.signal.aborted) break;

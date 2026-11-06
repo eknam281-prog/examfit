@@ -100,11 +100,18 @@ export async function renderPagePng(doc: import("pdfjs-dist").PDFDocumentProxy, 
   return url.slice(url.indexOf(",") + 1);
 }
 
+// Next.js API가 보낸 오류는 message가 있고, Vercel 방화벽(호출 제한)이 막으면 message 없이 403/429가 온다.
+export function httpFailureText(status: number, message?: string): string {
+  if (message) return message;
+  if (status === 403 || status === 429) return "요청이 짧은 시간에 너무 많아 일시적으로 제한됐어요(보통 10분 안에 풀려요). 잠시 후 다시 시도해 주세요. 이미 인식한 쪽은 저장되어 있고 남은 쪽만 처리돼요.";
+  return `HTTP ${status}`;
+}
+
 export type OcrResponse = { text?: string; usage?: { input: number; output: number }; message?: string; status: number };
 
 export async function callOcr(imageB64: string, fileName: string, page: number, signal?: AbortSignal): Promise<OcrResponse> {
   const res = await fetch("/api/exam/ocr", { method: "POST", headers: { "Content-Type": "application/json" }, signal, body: JSON.stringify({ image: imageB64, fileName, page }) });
   const d = (await res.json().catch(() => ({}))) as { text?: string; usage?: { input: number; output: number }; message?: string; missing?: string[] };
   const miss = d.missing?.length ? ` 필요한 서버 설정: ${d.missing.join(", ")}` : "";
-  return { status: res.status, text: d.text, usage: d.usage, message: res.ok ? undefined : `${d.message ?? `HTTP ${res.status}`}${miss}` };
+  return { status: res.status, text: d.text, usage: d.usage, message: res.ok ? undefined : `${httpFailureText(res.status, d.message)}${miss}` };
 }
