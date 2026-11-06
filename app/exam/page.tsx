@@ -8,6 +8,7 @@ import { SAMPLE_EXAM_QUESTIONS, SAMPLE_STATUS, type SampleQuestion } from "@/lib
 import { useLocalState } from "@/lib/useLocalState";
 import { AnswerFeedback } from "@/components/AnswerFeedback";
 import { OralExam } from "@/components/OralExam";
+import { useServerFlags } from "@/lib/useServerFlags";
 import { deriveFormat, isSimilarStem, MAX_QUESTIONS, ORAL_TYPES, planJob, QUESTION_TYPES, type GeneratedQuestion, type JobPlan } from "@/lib/generate";
 import { selectForGeneration } from "@/lib/materials";
 import { listFiles, listPages, type PdfPage } from "@/lib/pdfStore";
@@ -35,6 +36,8 @@ export default function ExamPage() {
   const [mat, setMat] = useState<MaterialSummary>({ files: 0, failedFiles: 0, pages: 0, usable: 0, review: 0, empty: 0, failed: 0, reviewed: 0, confirmed: 0, selected: 0, extracting: false });
   const onSummary = useCallback((m: MaterialSummary) => setMat(m), []);
   const [types, setTypes] = useState<string[]>([]);
+  const flags = useServerFlags();
+  const oralBlocked = flags !== null && !flags.oral; // AI 구술시험(음성)이 서버에서 꺼져 있는지
   const [oralMode, setOralMode] = useState(false); // false=필기형, true=AI 말하기 시험
   const [oralTypes, setOralTypes] = useState<string[]>([]);
   const [oralQs, setOralQs, oralReady] = useLocalState<GeneratedQuestion[]>("examfit.oralQuestions", []);
@@ -218,6 +221,11 @@ export default function ExamPage() {
                   </button>
                 ))}
               </div>
+              {oralMode && oralBlocked && (
+                <p role="alert" className="mt-3 rounded-2xl bg-sand p-3 text-xs font-medium">
+                  ⚠ AI 구술시험(음성)은 이 배포에서 비활성화되어 있어요. 말하기 문제는 만들어도 풀 수 없어서 생성도 막아 두었어요. 필기형 문제를 선택해 주세요.
+                </p>
+              )}
               <p className="mt-4 text-sm font-semibold">{oralMode ? "말하기 유형" : "문제 유형"}</p>
               <ul className="mt-2 flex flex-wrap gap-2">
                 {(oralMode ? ORAL_TYPES : QUESTION_TYPES).map((t) => {
@@ -326,7 +334,7 @@ export default function ExamPage() {
                   </button>
                 </div>
               ) : (
-                <button className={`${btnPrimary} ${btnLarge} mt-5 w-full`} disabled={mat.selected === 0 || mat.extracting || busy || countInvalid} onClick={() => void prepare()}>
+                <button className={`${btnPrimary} ${btnLarge} mt-5 w-full`} disabled={mat.selected === 0 || mat.extracting || busy || countInvalid || (oralMode && oralBlocked)} onClick={() => void prepare()}>
                   {gen.loading ? "자료 준비 중…" : "AI 예상문제 생성"}
                 </button>
               )}

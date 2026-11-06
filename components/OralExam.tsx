@@ -7,6 +7,7 @@ import type { GeneratedQuestion } from "@/lib/generate";
 import { attemptLabel, canAnswer, ERROR_LABEL, MAX_ATTEMPTS, type OralQ, type QState } from "@/lib/oral";
 import { OralSession, type OralState, type Phase } from "@/lib/oralSession";
 import { BrowserTransport } from "@/lib/realtime";
+import { useServerFlags } from "@/lib/useServerFlags";
 import type { FitchapEvent } from "@/lib/fitchapLines";
 
 const PHASE_LABEL: Record<Phase, string> = {
@@ -30,6 +31,8 @@ const toOralQ = (q: GeneratedQuestion): OralQ => ({ id: q.id, questionType: q.qu
 
 export function OralExam({ questions }: { questions: GeneratedQuestion[] }) {
   const [active, setActive] = useState<GeneratedQuestion[]>(questions);
+  const flags = useServerFlags();
+  const oralOff = flags !== null && !flags.oral; // 서버에서 음성 세션이 꺼져 있는지(확인 전·실패 시에는 막지 않음)
   const [stage, setStage] = useState<"intro" | "starting" | "live">("intro");
   const [minutes, setMinutes] = useState(1);
   const [startErr, setStartErr] = useState<string | null>(null);
@@ -113,6 +116,11 @@ export function OralExam({ questions }: { questions: GeneratedQuestion[] }) {
       <Card tone="soft" className="mx-auto max-w-2xl">
         <FitchapBubble event="oral.start" keep reserve={false} />
         <div className="mt-3" />
+        {oralOff && (
+          <p role="alert" className="mb-3 rounded-2xl bg-white p-3 text-sm font-medium">
+            ⚠ AI 구술시험(음성)은 이 배포에서 비활성화되어 있어요. 비용과 남용 방지를 위해 꺼 두었고, 문제 생성·스캔 인식·서술형 피드백은 사용할 수 있어요.
+          </p>
+        )}
         <Badge tone="dark">AI 구술시험</Badge>
         <h2 className="mt-3 text-xl font-bold">AI 교수님과 중국어 말하기 시험</h2>
         <p className="mt-1 text-sm text-warm">
@@ -139,7 +147,7 @@ export function OralExam({ questions }: { questions: GeneratedQuestion[] }) {
           </p>
         )}
         {ui?.phase === "finished" && <Results qs={active} state={ui} onRetry={(subset) => (setActive(subset), setUi(null), setStage("intro"))} />}
-        <button className={`${btnPrimary} ${btnLarge} mt-5 w-full`} disabled={stage === "starting" || active.length === 0} onClick={() => void start()}>
+        <button className={`${btnPrimary} ${btnLarge} mt-5 w-full`} disabled={stage === "starting" || active.length === 0 || oralOff} onClick={() => void start()}>
           {stage === "starting" ? "연결 중…" : "말하기 시험 시작"}
         </button>
       </Card>

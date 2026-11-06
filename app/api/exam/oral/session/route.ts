@@ -13,6 +13,8 @@ const issued: number[] = [];
 export async function POST(req: Request) {
   const blocked = guardAi(req);
   if (blocked) return blocked;
+  // 실시간 음성은 세션 길이를 서버가 제한할 수 없어 별도 스위치로 막는다(기본 꺼짐: EXAMFIT_ORAL_ENABLED=true일 때만 세션 발급).
+  if (process.env.EXAMFIT_ORAL_ENABLED !== "true") return fail(503, "ORAL_DISABLED", "AI 구술시험(음성)은 이 배포에서 비활성화되어 있어요.");
   const key = process.env.FACTCHAT_API_KEY;
   const base = process.env.FACTCHAT_API_BASE_URL;
   const model = process.env.FACTCHAT_REALTIME_MODEL;
