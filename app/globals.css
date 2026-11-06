@@ -1,0 +1,38 @@
+@import "tailwindcss";
+
+@theme {
+  --color-ivory: #F8F5EF; /* Cream */
+  --color-charcoal: #292724; /* Ink */
+  --color-sage: #A5A083; /* Olive */
+  --color-sage-dark: #5C4538; /* Cocoa: 메인 버튼·현재 단계 */
+  --color-mist: #F0ECE3;
+  --color-sand: #E8DCC9; /* Sand */
+  --color-sage-soft: #ECE9DB; /* Olive tint */
+  --color-cocoa: #5C4538;
+  --color-cocoa-deep: #3F2F26;
+  --color-olive: #A5A083;
+  --color-olive-deep: #7F7A5E;
+  --color-warm: #7A6C60;
+  --font-sans: "Pretendard", "Noto Sans KR", "Noto Sans SC", "Microsoft YaHei", "Malgun Gothic", system-ui, sans-serif;
+}
+
+body {
+  background: var(--color-ivory);
+  color: var(--color-charcoal);
+}
+
+:focus-visible {
+  outline: 2px solid var(--color-sage-dark);
+  outline-offset: 2px;
+}
+
+/* 학습 피드백용 최소 애니메이션 (홈 미사용) */
+@keyframes ef-pop { from { opacity: 0; transform: translateY(8px) scale(0.98); } to { opacity: 1; transform: none; } }
+@keyframes ef-float { 0% { opacity: 0; transform: translateY(6px); } 20%, 80% { opacity: 1; transform: translateY(0); } 100% { opacity: 0; transform: translateY(-8px); } }
+.anim-pop { animation: ef-pop 0.22s ease-out; }
+.anim-float { animation: ef-float 1.4s ease-out forwards; }
+@media (prefers-reduced-motion: reduce) { .anim-pop, .anim-float { animation: none; } }
+
+@keyframes ef-bob { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+.anim-bob { animation: ef-bob 2.4s ease-in-out infinite; }
+@media (prefers-reduced-motion: reduce) { .anim-bob { animation: none; } }

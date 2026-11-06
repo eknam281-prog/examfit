@@ -1,0 +1,148 @@
+// 일상 중국어 공통 학습 데이터(고정·검증용 소규모 은행). AI가 만든 것이 아니라 직접 작성한 기초 어휘·문장이며,
+// 단어·듣기·회화·한자 쓰기가 같은 데이터를 공유한다. 문장의 keys는 그 문장이 가르치는 핵심 단어이고, 문장은 keys의 한자를 그대로 포함한다.
+import type { Level } from "./placement";
+
+export type TopicId = "greet" | "cafe" | "shop" | "travel" | "school" | "friend" | "hotel" | "hobby";
+export const TOPICS: { id: TopicId; label: string }[] = [
+  { id: "greet", label: "인사·자기소개" },
+  { id: "cafe", label: "카페·식당" },
+  { id: "shop", label: "쇼핑" },
+  { id: "travel", label: "여행·교통" },
+  { id: "school", label: "학교생활" },
+  { id: "friend", label: "친구와 대화" },
+  { id: "hotel", label: "호텔·예약" },
+  { id: "hobby", label: "취미·일상생활" },
+];
+
+export type DWord = { id: string; hanzi: string; pinyin: string; ko: string; topic: TopicId; level: Level };
+export type DSentence = { id: string; zh: string; pinyin: string; ko: string; keys: [string, string]; topic: TopicId; level: Level };
+
+const w = (id: number, hanzi: string, pinyin: string, ko: string, topic: TopicId, level: Level): DWord => ({ id: `d${String(id).padStart(2, "0")}`, hanzi, pinyin, ko, topic, level });
+
+export const DAILY_WORDS: DWord[] = [
+  // 인사·자기소개
+  w(1, "你好", "nǐ hǎo", "안녕하세요", "greet", 1),
+  w(2, "谢谢", "xièxie", "감사합니다", "greet", 1),
+  w(3, "对不起", "duìbuqǐ", "미안합니다", "greet", 1),
+  w(4, "再见", "zàijiàn", "안녕히 가세요", "greet", 1),
+  w(5, "名字", "míngzi", "이름", "greet", 2),
+  w(6, "认识", "rènshi", "알다, 만나서 알게 되다", "greet", 2),
+  w(7, "高兴", "gāoxìng", "기쁘다", "greet", 2),
+  w(8, "欢迎", "huānyíng", "환영하다", "greet", 3),
+  // 카페·식당
+  w(9, "咖啡", "kāfēi", "커피", "cafe", 1),
+  w(10, "水", "shuǐ", "물", "cafe", 1),
+  w(11, "菜单", "càidān", "메뉴", "cafe", 2),
+  w(12, "点菜", "diǎn cài", "음식을 주문하다", "cafe", 2),
+  w(13, "好吃", "hǎochī", "맛있다", "cafe", 2),
+  w(14, "服务员", "fúwùyuán", "종업원", "cafe", 2),
+  w(15, "结账", "jiézhàng", "계산하다", "cafe", 3),
+  w(16, "推荐", "tuījiàn", "추천하다", "cafe", 3),
+  // 쇼핑
+  w(17, "多少钱", "duōshao qián", "얼마예요", "shop", 1),
+  w(18, "便宜", "piányi", "싸다", "shop", 2),
+  w(19, "贵", "guì", "비싸다", "shop", 1),
+  w(20, "衣服", "yīfu", "옷", "shop", 2),
+  w(21, "买", "mǎi", "사다", "shop", 1),
+  w(22, "颜色", "yánsè", "색깔", "shop", 3),
+  w(23, "试穿", "shìchuān", "입어 보다", "shop", 3),
+  w(24, "折扣", "zhékòu", "할인", "shop", 4),
+  // 여행·교통
+  w(25, "地铁", "dìtiě", "지하철", "travel", 2),
+  w(26, "机场", "jīchǎng", "공항", "travel", 2),
+  w(27, "票", "piào", "표", "travel", 1),
+  w(28, "怎么走", "zěnme zǒu", "어떻게 가요", "travel", 2),
+  w(29, "出租车", "chūzūchē", "택시", "travel", 3),
+  w(30, "迷路", "mílù", "길을 잃다", "travel", 3),
+  w(31, "到达", "dàodá", "도착하다", "travel", 4),
+  w(32, "行李", "xíngli", "짐", "travel", 3),
+  // 학교생활
+  w(33, "老师", "lǎoshī", "선생님", "school", 1),
+  w(34, "学生", "xuésheng", "학생", "school", 1),
+  w(35, "教室", "jiàoshì", "교실", "school", 2),
+  w(36, "作业", "zuòyè", "숙제", "school", 2),
+  w(37, "考试", "kǎoshì", "시험", "school", 2),
+  w(38, "图书馆", "túshūguǎn", "도서관", "school", 2),
+  w(39, "复习", "fùxí", "복습하다", "school", 3),
+  w(40, "成绩", "chéngjì", "성적", "school", 4),
+  // 친구와 대화
+  w(41, "朋友", "péngyou", "친구", "friend", 1),
+  w(42, "喜欢", "xǐhuan", "좋아하다", "friend", 2),
+  w(43, "周末", "zhōumò", "주말", "friend", 2),
+  w(44, "电影", "diànyǐng", "영화", "friend", 2),
+  w(45, "一起", "yìqǐ", "함께", "friend", 2),
+  w(46, "打算", "dǎsuàn", "~할 계획이다", "friend", 3),
+  w(47, "有空", "yǒu kòng", "시간이 있다", "friend", 3),
+  w(48, "约", "yuē", "약속하다", "friend", 4),
+  // 호텔·예약
+  w(49, "酒店", "jiǔdiàn", "호텔", "hotel", 2),
+  w(50, "房间", "fángjiān", "방, 객실", "hotel", 2),
+  w(51, "预订", "yùdìng", "예약하다", "hotel", 2),
+  w(52, "身份证", "shēnfènzhèng", "신분증", "hotel", 3),
+  w(53, "护照", "hùzhào", "여권", "hotel", 3),
+  w(54, "钥匙", "yàoshi", "열쇠", "hotel", 3),
+  w(55, "早餐", "zǎocān", "아침 식사", "hotel", 3),
+  w(56, "退房", "tuìfáng", "체크아웃하다", "hotel", 4),
+  // 취미·일상생활
+  w(57, "运动", "yùndòng", "운동", "hobby", 2),
+  w(58, "音乐", "yīnyuè", "음악", "hobby", 2),
+  w(59, "看书", "kàn shū", "책을 보다", "hobby", 1),
+  w(60, "旅行", "lǚxíng", "여행", "hobby", 3),
+  w(61, "做饭", "zuò fàn", "요리하다", "hobby", 2),
+  w(62, "散步", "sànbù", "산책하다", "hobby", 3),
+  w(63, "睡觉", "shuìjiào", "자다", "hobby", 1),
+  w(64, "爱好", "àihào", "취미", "hobby", 3),
+];
+
+const s = (id: number, zh: string, pinyin: string, ko: string, k1: number, k2: number, topic: TopicId, level: Level): DSentence => ({
+  id: `s${String(id).padStart(2, "0")}`,
+  zh,
+  pinyin,
+  ko,
+  keys: [`d${String(k1).padStart(2, "0")}`, `d${String(k2).padStart(2, "0")}`],
+  topic,
+  level,
+});
+
+export const DAILY_SENTENCES: DSentence[] = [
+  s(1, "你好,你叫什么名字?", "Nǐ hǎo, nǐ jiào shénme míngzi?", "안녕하세요, 이름이 뭐예요?", 1, 5, "greet", 1),
+  s(2, "很高兴认识你。", "Hěn gāoxìng rènshi nǐ.", "만나서 반갑습니다.", 7, 6, "greet", 2),
+  s(3, "谢谢,再见!", "Xièxie, zàijiàn!", "감사합니다, 안녕히 가세요!", 2, 4, "greet", 1),
+  s(4, "对不起,谢谢你。", "Duìbuqǐ, xièxie nǐ.", "미안해요, 고마워요.", 3, 2, "greet", 1),
+  s(5, "你好,欢迎欢迎!", "Nǐ hǎo, huānyíng huānyíng!", "안녕하세요, 환영합니다!", 8, 1, "greet", 3),
+  s(6, "你好,我要一杯咖啡。", "Nǐ hǎo, wǒ yào yì bēi kāfēi.", "안녕하세요, 커피 한 잔 주세요.", 9, 1, "cafe", 1),
+  s(7, "服务员,请给我菜单。", "Fúwùyuán, qǐng gěi wǒ càidān.", "종업원님, 메뉴를 주세요.", 14, 11, "cafe", 2),
+  s(8, "我想点菜,这个好吃吗?", "Wǒ xiǎng diǎn cài, zhège hǎochī ma?", "주문하고 싶은데, 이거 맛있어요?", 12, 13, "cafe", 2),
+  s(9, "你推荐什么好吃的?", "Nǐ tuījiàn shénme hǎochī de?", "맛있는 걸로 뭘 추천하세요?", 16, 13, "cafe", 3),
+  s(10, "请给我一杯水,然后结账。", "Qǐng gěi wǒ yì bēi shuǐ, ránhòu jiézhàng.", "물 한 잔 주세요, 그리고 계산할게요.", 10, 15, "cafe", 3),
+  s(11, "这个多少钱?我想买。", "Zhège duōshao qián? Wǒ xiǎng mǎi.", "이거 얼마예요? 사고 싶어요.", 17, 21, "shop", 1),
+  s(12, "太贵了,能便宜一点吗?", "Tài guì le, néng piányi yìdiǎn ma?", "너무 비싸요, 좀 깎아 줄 수 있어요?", 19, 18, "shop", 2),
+  s(13, "我想试穿这件衣服。", "Wǒ xiǎng shìchuān zhè jiàn yīfu.", "이 옷 입어 보고 싶어요.", 23, 20, "shop", 3),
+  s(14, "这件衣服有别的颜色吗?", "Zhè jiàn yīfu yǒu bié de yánsè ma?", "이 옷 다른 색깔 있어요?", 20, 22, "shop", 3),
+  s(15, "现在有折扣吗?多少钱?", "Xiànzài yǒu zhékòu ma? Duōshao qián?", "지금 할인 있어요? 얼마예요?", 24, 17, "shop", 4),
+  s(16, "请问,地铁站怎么走?", "Qǐngwèn, dìtiězhàn zěnme zǒu?", "실례지만, 지하철역은 어떻게 가요?", 25, 28, "travel", 2),
+  s(17, "我坐出租车去机场。", "Wǒ zuò chūzūchē qù jīchǎng.", "저는 택시를 타고 공항에 가요.", 29, 26, "travel", 3),
+  s(18, "我想买一张地铁票。", "Wǒ xiǎng mǎi yì zhāng dìtiě piào.", "지하철 표 한 장 사고 싶어요.", 27, 25, "travel", 2),
+  s(19, "我迷路了,怎么走?", "Wǒ mílù le, zěnme zǒu?", "길을 잃었어요, 어떻게 가요?", 30, 28, "travel", 3),
+  s(20, "我们几点到达机场?", "Wǒmen jǐ diǎn dàodá jīchǎng?", "우리 몇 시에 공항에 도착해요?", 31, 26, "travel", 4),
+  s(21, "老师好,我是学生。", "Lǎoshī hǎo, wǒ shì xuésheng.", "선생님 안녕하세요, 저는 학생이에요.", 33, 34, "school", 1),
+  s(22, "教室在图书馆旁边。", "Jiàoshì zài túshūguǎn pángbiān.", "교실은 도서관 옆에 있어요.", 35, 38, "school", 2),
+  s(23, "今天有考试,我还没做作业。", "Jīntiān yǒu kǎoshì, wǒ hái méi zuò zuòyè.", "오늘 시험이 있는데 아직 숙제를 안 했어요.", 37, 36, "school", 2),
+  s(24, "我在图书馆复习。", "Wǒ zài túshūguǎn fùxí.", "저는 도서관에서 복습해요.", 38, 39, "school", 3),
+  s(25, "这次考试的成绩很好。", "Zhè cì kǎoshì de chéngjì hěn hǎo.", "이번 시험 성적이 아주 좋아요.", 37, 40, "school", 4),
+  s(26, "我和朋友一起去。", "Wǒ hé péngyou yìqǐ qù.", "저는 친구와 함께 가요.", 41, 45, "friend", 2),
+  s(27, "你周末有空吗?", "Nǐ zhōumò yǒu kòng ma?", "주말에 시간 있어요?", 43, 47, "friend", 3),
+  s(28, "我们一起看电影吧。", "Wǒmen yìqǐ kàn diànyǐng ba.", "우리 같이 영화 봐요.", 45, 44, "friend", 2),
+  s(29, "我喜欢看电影。", "Wǒ xǐhuan kàn diànyǐng.", "저는 영화 보는 것을 좋아해요.", 42, 44, "friend", 2),
+  s(30, "你周末打算做什么?", "Nǐ zhōumò dǎsuàn zuò shénme?", "주말에 뭐 할 계획이에요?", 46, 43, "friend", 3),
+  s(31, "我想预订一个房间。", "Wǒ xiǎng yùdìng yí ge fángjiān.", "방 하나 예약하고 싶어요.", 51, 50, "hotel", 2),
+  s(32, "请给我您的护照和身份证。", "Qǐng gěi wǒ nín de hùzhào hé shēnfènzhèng.", "여권과 신분증을 주세요.", 53, 52, "hotel", 3),
+  s(33, "这是您的房间钥匙。", "Zhè shì nín de fángjiān yàoshi.", "이것이 객실 열쇠입니다.", 50, 54, "hotel", 3),
+  s(34, "酒店的早餐几点开始?", "Jiǔdiàn de zǎocān jǐ diǎn kāishǐ?", "호텔 조식은 몇 시에 시작해요?", 49, 55, "hotel", 3),
+  s(35, "我想退房,谢谢。", "Wǒ xiǎng tuìfáng, xièxie.", "체크아웃하고 싶어요, 감사합니다.", 56, 2, "hotel", 4),
+  s(36, "我的爱好是听音乐。", "Wǒ de àihào shì tīng yīnyuè.", "제 취미는 음악 듣기예요.", 64, 58, "hobby", 3),
+  s(37, "我喜欢运动。", "Wǒ xǐhuan yùndòng.", "저는 운동을 좋아해요.", 42, 57, "hobby", 2),
+  s(38, "周末我想去旅行。", "Zhōumò wǒ xiǎng qù lǚxíng.", "주말에 여행 가고 싶어요.", 43, 60, "hobby", 3),
+  s(39, "晚上我喜欢散步。", "Wǎnshang wǒ xǐhuan sànbù.", "저녁에 산책하는 것을 좋아해요.", 42, 62, "hobby", 3),
+  s(40, "我今天在家做饭,然后睡觉。", "Wǒ jīntiān zài jiā zuò fàn, ránhòu shuìjiào.", "오늘 집에서 요리하고 그다음에 잘 거예요.", 61, 63, "hobby", 2),
+];
