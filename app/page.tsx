@@ -5,6 +5,9 @@ import { Badge, Card, LinkButton, ProgressBar, btnLarge } from "@/components/ui"
 import { LEVELS, getLevelInfo } from "@/lib/character";
 import { SAMPLE_STATUS } from "@/lib/data";
 import { useFitchapName } from "@/lib/fitchapName";
+import { todayKey } from "@/lib/daily";
+import { learnedDays, streak } from "@/lib/recordStats";
+import { useDaily } from "@/lib/useDaily";
 import { useLocalState } from "@/lib/useLocalState";
 
 const DEFAULT_MODES = { daily: true, exam: true };
@@ -13,7 +16,11 @@ export default function HomePage() {
   const [modes, setModes] = useLocalState("examfit.modes", DEFAULT_MODES);
   const [xp] = useLocalState("examfit.xp", SAMPLE_STATUS.xp);
   const { display: fitName } = useFitchapName();
-  const { streakDays, todayMinutes, goalMinutes } = SAMPLE_STATUS;
+  // 연속 일수·오늘 학습량은 저장된 일일 학습 세션(실제로 완료한 단계)에서 계산한다. 기록이 없으면 0.
+  const { store } = useDaily();
+  const days = learnedDays(store);
+  const streakDays = streak(new Set(days.keys()), todayKey());
+  const todayDone = Math.min(4, new Set(days.get(todayKey())?.steps.map((x) => x.step) ?? []).size);
   const { current, next, progress, xpToNext } = getLevelInfo(xp);
 
   return (
@@ -28,7 +35,7 @@ export default function HomePage() {
             <div className="flex items-center gap-2">
               <Badge tone="dark">Lv.{current.level}</Badge>
               <Badge tone="gray">{fitName}</Badge>
-              <Badge tone="gray">연속 {streakDays}일 · 예시</Badge>
+              <Badge tone="gray">연속 {streakDays}일</Badge>
             </div>
             <h1 className="mt-3 text-2xl font-bold tracking-tight md:text-3xl">오늘도 핏찹이와 한 걸음</h1>
 
@@ -37,10 +44,10 @@ export default function HomePage() {
                 <div className="mb-1.5 flex items-baseline justify-between text-sm">
                   <span className="font-semibold">오늘의 학습</span>
                   <span className="text-warm">
-                    <b className="text-base text-charcoal">{todayMinutes}</b> / {goalMinutes}분
+                    <b className="text-base text-charcoal">{todayDone}</b> / 4단계 완료
                   </span>
                 </div>
-                <ProgressBar value={todayMinutes / goalMinutes} />
+                <ProgressBar value={todayDone / 4} />
               </div>
               <div>
                 <div className="mb-1.5 flex items-baseline justify-between text-sm">

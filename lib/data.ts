@@ -17,8 +17,9 @@ export const SAMPLE_LISTENING: ListeningItem[] = [
   { id: "l4", hanzi: "周末我们一起去吃饭吧。", pinyin: "Zhōumò wǒmen yìqǐ qù chīfàn ba.", meaning: "주말에 같이 밥 먹으러 가요.", source: "기본 예시" },
 ];
 
-// 홈 대시보드용 예시 상태 (실제 기록 아님)
-export const SAMPLE_STATUS = { xp: 135, streakDays: 3, todayMinutes: 12, goalMinutes: 20 };
+// 저장된 기록이 없을 때의 기본 상태(신규 사용자: 0 XP·Lv.1). 예시 값을 실제 기록처럼 쓰지 않는다.
+// 연속 일수·오늘 학습량은 이제 저장된 학습 세션에서 계산하며 이 값은 쓰지 않는다.
+export const SAMPLE_STATUS = { xp: 0, streakDays: 0, todayMinutes: 0, goalMinutes: 20 };
 
 export type SampleQuestion = { id: string; type: string; stem: string; choices: string[]; correctIndex: number; explanation: string };
 
